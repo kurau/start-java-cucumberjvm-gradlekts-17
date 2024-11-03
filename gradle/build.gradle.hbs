@@ -1,0 +1,110 @@
+plugins {
+    id 'java'
+}
+
+wrapper {
+    gradleVersion = "{{ gradleVersion }}"
+}
+
+repositories {
+    mavenCentral()
+}
+
+group = "{{ group }}"
+version = "1.0-SNAPSHOT"
+
+def allureVersion = "{{ allureBom }}"
+def cucumberVersion = "{{ cucumberJavaVersion }}"
+def aspectJVersion = "{{ aspectjweaver }}"
+
+{{#if java9orAbove}}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of({{ java }})
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.compilerArgs.add("-parameters")
+}
+{{else}}
+tasks.withType(JavaCompile).configureEach {
+    sourceCompatibility = "${JavaVersion.VERSION_1_8}"
+    targetCompatibility = "${JavaVersion.VERSION_1_8}"
+    options.encoding = "UTF-8"
+    options.compilerArgs.add("-parameters")
+}
+{{/if}}
+
+configurations {
+    agent {
+        canBeResolved = true
+        canBeConsumed = true
+    }
+}
+
+dependencies {
+    agent "org.aspectj:aspectjweaver:$aspectJVersion"
+    
+    {{#if cucumberBomNotSupported}}
+    testImplementation "io.cucumber:cucumber-java:$cucumberVersion"
+    {{#if runnerJunitPlatform}}
+    testImplementation "io.cucumber:cucumber-junit-platform-engine:$cucumberVersion"
+    {{/if}}
+    {{#if runnerTestNg}}
+    testImplementation "io.cucumber:cucumber-testng:$cucumberVersion"
+    {{/if}}
+    {{#if runnerJunit4}}
+    testImplementation "io.cucumber:cucumber-junit:$cucumberVersion"
+    {{/if}}
+    {{else}}
+    testImplementation platform("io.cucumber:cucumber-bom:$cucumberVersion")
+    testImplementation "io.cucumber:cucumber-java"
+    {{#if runnerJunitPlatform}}
+    testImplementation "io.cucumber:cucumber-junit-platform-engine"
+    {{/if}}
+    {{#if runnerTestNg}}
+    testImplementation "io.cucumber:cucumber-testng"
+    {{/if}}
+    {{#if runnerJunit4}}
+    testImplementation "io.cucumber:cucumber-junit"
+    {{/if}}
+    {{/if}}
+
+    testImplementation platform("io.qameta.allure:allure-bom:$allureVersion")
+    testImplementation "io.qameta.allure:{{ allureCucumberArtifact }}"
+    {{#if runnerJunitPlatform}}
+    testImplementation "io.qameta.allure:allure-junit-platform"
+    {{/if}}
+    {{#if runnerTestNg}}
+    testImplementation "io.qameta.allure:allure-testng"
+    {{/if}}
+    {{#if runnerJunit4}}
+    testImplementation "io.qameta.allure:allure-junit4"
+    testImplementation "io.qameta.allure:allure-junit4-aspect"
+    {{/if}}
+
+    {{#if runnerJunitPlatform}}
+    testImplementation platform("org.junit:junit-bom:{{ junitBom }}")
+    testImplementation "org.junit.platform:junit-platform-suite"
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+
+    {{/if}}
+    testImplementation "org.slf4j:slf4j-simple:{{ slf4j }}"
+}
+
+test {
+    ignoreFailures = true
+    {{#if runnerJunitPlatform}}
+    useJUnitPlatform()
+    {{/if}}
+    {{#if runnerTestNg}}
+    useTestNG()
+    {{/if}}
+    {{#if runnerJunit4}}
+    useJUnit()
+    {{/if}}
+    jvmArgs = [ "-javaagent:${configurations.agent.singleFile}" ]
+}
