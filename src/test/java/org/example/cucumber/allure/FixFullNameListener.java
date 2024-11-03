@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FixParameterizedFullNameListener implements TestLifecycleListener {
+public class FixFullNameListener implements TestLifecycleListener {
 
     private static final Pattern PARAMETERIZED_FULL_NAME_MATCHER =
             Pattern.compile("(?<fullName>.*)(?<lineNumber>:.*)");
@@ -23,14 +23,7 @@ public class FixParameterizedFullNameListener implements TestLifecycleListener {
         System.out.println(result.getName());
 
         if (matcher.matches()) {
-
-            result.setFullName(
-                    String.format(FULL_NAME, matcher.group("fullName"), result.getName()));
-            if (Objects.isNull(result.getParameters()) || result.getParameters().isEmpty()) {
-                result.setParameters(
-                        Arrays.asList(new Parameter().setName("param")
-                                .setValue(matcher.group("params"))));
-            }
+            result.setFullName(String.format(FULL_NAME, matcher.group("fullName"), result.getName()));
         }
     }
 }
