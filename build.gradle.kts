@@ -32,9 +32,9 @@ val agent: Configuration by configurations.creating {
 tasks.test {
     ignoreFailures = true
     useJUnitPlatform()
-//    jvmArgs = listOf(
-//        "-javaagent:${agent.singleFile}"
-//    )
+    jvmArgs = listOf(
+        "-javaagent:${agent.singleFile}"
+    )
 }
 
 dependencies {

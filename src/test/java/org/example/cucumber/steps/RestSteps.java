@@ -31,4 +31,13 @@ public class RestSteps {
         step("GET /repos/:owner/:repo/labels/834");
     }
 
+    @When("I create name {string} via api")
+    public void createName(final String name) {
+        step("POST /repos/:owner/:repo/name");
+    }
+
+    @When("I should see new name {string} via api")
+    public void shouldSeeNewName(final String name) {
+        step("GET /repos/:owner/:repo/name");
+    }
 }
