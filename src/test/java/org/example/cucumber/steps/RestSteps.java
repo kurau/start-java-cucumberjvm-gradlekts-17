@@ -36,7 +36,7 @@ public class RestSteps {
         step("POST /repos/:owner/:repo/name");
     }
 
-    @When("I should see new name {string} via api")
+    @Then("I should see new name {string} via api")
     public void shouldSeeNewName(final String name) {
         step("GET /repos/:owner/:repo/name");
     }
