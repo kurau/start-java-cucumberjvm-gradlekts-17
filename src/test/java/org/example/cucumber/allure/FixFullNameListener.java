@@ -18,12 +18,13 @@ public class FixFullNameListener implements TestLifecycleListener {
     public void beforeTestStop(final TestResult result) {
         final Matcher matcher = PARAMETERIZED_FULL_NAME_MATCHER.matcher(result.getFullName());
 
-        System.out.println(" Full Name " + result.getFullName());
-        System.out.println(matcher.matches());
-        System.out.println(matcher.group("fullName"));
-        System.out.println(result.getName());
-
         if (matcher.matches()) {
+
+            System.out.println(" Full Name " + result.getFullName());
+            System.out.println(matcher.matches());
+            System.out.println(matcher.group("fullName"));
+            System.out.println(result.getName());
+
             result.setFullName(String.format(FULL_NAME, matcher.group("fullName"), result.getName()));
         }
     }
