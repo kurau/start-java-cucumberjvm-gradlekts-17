@@ -50,19 +50,28 @@ public class AllurePostDiscoveryFilter implements PostDiscoveryFilter {
             return FilterResult.included("filter only applied for tests");
         }
         final Optional<String> cucumberFullName = getCucumberFullName(object.getUniqueId());
+
         if (cucumberFullName.isPresent()) {
-            System.out.println(isIncluded(testPlan, "", fullNames.get(cucumberFullName.get())));
-            return FilterResult.included("hello");
+            return FilterResult.includedIf(isIncluded(testPlan, "", cucumberFullName.get()));
         }
         return FilterResult.included("filter only applied for cucumber tests");
     }
 
     private Optional<String> getCucumberFullName(final UniqueId uniqueId) {
         final Map<String, String> meta = getResourceMeta(uniqueId);
+        Optional<String> nameId = Optional.empty();
         if (meta.containsKey(FEATURE) && meta.containsKey(SCENARIO)) {
-            return Optional.of(String.format("%s:%s", meta.get(FEATURE), meta.get(SCENARIO)));
+            nameId = Optional.of(String.format(
+                    "%s:%s", meta.get(FEATURE), meta.get(SCENARIO)));
+
+            if (!fullNames.get(nameId.get()).isEmpty()) {
+                String featureWithoutClasspath = meta.get(FEATURE)
+                        .replace("classpath:", "");
+                return Optional.of(String.format(
+                        "%s:%s", featureWithoutClasspath, fullNames.get(nameId.get())));
+            }
         }
-        return Optional.empty();
+        return nameId;
     }
 
     private Map<String, String> getResourceMeta(final UniqueId uniqueId) {

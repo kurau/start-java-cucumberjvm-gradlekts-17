@@ -46,7 +46,6 @@ dependencies {
 
     testImplementation(platform("io.qameta.allure:allure-bom:$allureVersion"))
     testImplementation("io.qameta.allure:allure-cucumber7-jvm")
-    testImplementation("io.qameta.allure:allure-junit-platform:2.29.0")
     testImplementation("io.qameta.allure:allure-java-commons:2.29.0")
     testImplementation("io.qameta.allure:allure-test-filter:2.29.0")
 
